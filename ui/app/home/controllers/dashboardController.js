@@ -1,8 +1,8 @@
 'use strict';
 
 angular.module('bahmni.home')
-    .controller('DashboardController', ['$scope', '$state', 'appService', 'locationService', 'spinner', '$bahmniCookieStore', '$window', '$q',
-        function ($scope, $state, appService, locationService, spinner, $bahmniCookieStore, $window, $q) {
+    .controller('DashboardController', ['$scope', '$state', 'appService', 'locationService', 'spinner', '$bahmniCookieStore', '$window', '$q', 'sessionService',
+        function ($scope, $state, appService, locationService, spinner, $bahmniCookieStore, $window, $q, sessionService) {
             $scope.appExtensions = appService.getAppDescriptor().getExtensions($state.current.data.extensionPointId, "link") || [];
             $scope.selectedLocationUuid = {};
 
@@ -49,9 +49,9 @@ angular.module('bahmni.home')
 
             $scope.onLocationChange = function () {
                 var selectedLocation = getLocationFor($scope.selectedLocationUuid);
-                locationService.setSessionLocation({ sessionLocation: selectedLocation.uuid}).then(function (response) {
-                    updateLocationCookie(selectedLocation);
-                    return response;
+
+                sessionService.updateSession({ name: selectedLocation.display, uuid: selectedLocation.uuid }, null).then(function () {
+                    $window.location.reload();
                 });
             };
 
